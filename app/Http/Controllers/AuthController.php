@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\user;
+use GuzzleHttp\Exception\ClientException;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
@@ -14,11 +17,38 @@ class AuthController extends Controller
 
     public function postLogin(Request $request)
     {
-        if (!auth()->attempt(['email'=> $request->email, 'password' => $request->password])) {
-            return redirect()->back();
+        try {
+            if (Auth::attempt($request->only(['email', 'password']))) {
+                echo "Berhasil login";
+                exit;
+
+                // lakukan sesuatu
+
+            } else {
+                echo "Gagal login";
+                exit;
+
+                // lakukan sesuatu
+
+            }
+        } catch (\Exception $th) {
+            return $this->exception($th);
+        }
+    }
+
+    private function exception(\Exception $e) {
+        if($e instanceof ClientException) {
+            $newException = json_decode($e->getResponse()->getBody()->getContents(), true);
+            if($newException) {
+                $e = new \Exception($newException['reason'], $newException['code']);
+            }
         }
 
-        return redirect()->route('home');
+        $arr = [
+            'message' => $e->getMessage(),
+            'code' => $e->getCode()
+        ];
+        return response()->json($arr);
     }
 
     public function getRegister()
@@ -28,25 +58,17 @@ class AuthController extends Controller
 
     public function postRegister(Request $request)
     {
-        $this->validate($request,[
-            'name'=> 'required|min:4',
-            'email'=> 'required|email|unique:users',
-            'password'=> 'required|min:8|confirmed'
-        ]);
-
-        user::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password)
-        ]);
-
-            return redirect()->back();
+        $user = new User();
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->password = Hash::make($request->password);
+        $user->save();
+        return redirect()->route('login');
     }
 
     public function logout()
     {
-        auth()->logout();
-
+        Auth::logout();
         return redirect()->route('Login');
     }
 }
