@@ -19,17 +19,9 @@ class AuthController extends Controller
     {
         try {
             if (Auth::attempt($request->only(['email', 'password']))) {
-                echo "Berhasil login";
-                exit;
-
-                // lakukan sesuatu
-
+                return redirect()->route('/');
             } else {
-                echo "Gagal login";
-                exit;
-
-                // lakukan sesuatu
-
+            
             }
         } catch (\Exception $th) {
             return $this->exception($th);
@@ -64,11 +56,5 @@ class AuthController extends Controller
         $user->password = Hash::make($request->password);
         $user->save();
         return redirect()->route('login');
-    }
-
-    public function logout()
-    {
-        Auth::logout();
-        return redirect()->route('Login');
     }
 }

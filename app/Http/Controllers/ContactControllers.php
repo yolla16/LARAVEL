@@ -41,8 +41,8 @@ class ContactControllers extends Controller {
     {
         $request->validate([
             'full_name' => 'required|max:30',
-            'email' => 'required',
-            'phone' => 'required|email:rfc,dns',
+            'email' => 'required|email:rfc,dns',
+            'phone' => 'required',
             'address' => 'required'
         ]);
         $contact = new Contact([
