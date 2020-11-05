@@ -13,9 +13,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', 'ContactControllers@index');
+Route::post('/contacts', 'ContactControllers@store');
+Route::get('/contacts/create', 'ContactControllers@create');
+Route::get('/contacts/{id}/edit', 'ContactControllers@edit');
+Route::patch('/contacts/{id}', 'ContactControllers@update');
+Route::delete('/contacts/{id}', 'ContactControllers@destroy');
 
 Route::get('/register', 'AuthController@getRegister')->name('register')->middleware('guest');
 Route::post('/register', 'AuthController@postRegister')->middleware('guest');
