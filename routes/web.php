@@ -13,7 +13,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', 'ContactControllers@index');
+Route::get('/home', 'ContactControllers@index')->name('web.home');
+Route::get('/', 'ContactControllers@index')->name('web.index');
 Route::post('/contacts', 'ContactControllers@store');
 Route::get('/contacts/create', 'ContactControllers@create');
 Route::get('/contacts/{id}/edit', 'ContactControllers@edit');

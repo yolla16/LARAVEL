@@ -10,13 +10,13 @@ class ContactControllers extends Controller {
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request) 
+    public function index(Request $request)
     {
         $keyword = $request->get('keyword');
         $contacts = Contact::paginate(3);
 
         if($keyword){
-         $contacts = Contact::where("name","LIKE","%$keyword%")->get();
+         $contacts = Contact::where("name","LIKE","%$keyword%")->paginate(3);
         }
 
         return view('contact.index',compact('contacts'));
@@ -37,7 +37,7 @@ class ContactControllers extends Controller {
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request) 
+    public function store(Request $request)
     {
         $request->validate([
             'full_name' => 'required|max:30',
@@ -96,7 +96,7 @@ class ContactControllers extends Controller {
         $contact->phone = $request->input('phone');
         $contact->address = $request->input('address');
         $contact->save();
-        return redirect('/')->with('success','Contact update!');       
+        return redirect('/')->with('success','Contact update!');
     }
 
     /**
@@ -108,6 +108,6 @@ class ContactControllers extends Controller {
     public function destroy($id) {
         $contact  = Contact::find($id);
         $contact->delete();
-        return redirect('/')->with('success','Contact deleted!');  
+        return redirect('/')->with('success','Contact deleted!');
     }
 }

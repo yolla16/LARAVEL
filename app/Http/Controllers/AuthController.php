@@ -12,16 +12,16 @@ class AuthController extends Controller
 {
     public function getLogin()
     {
-        return view ('login');
+        return view('login');
     }
 
     public function postLogin(Request $request)
     {
         try {
             if (Auth::attempt($request->only(['email', 'password']))) {
-                return redirect()->route('/');
+                return redirect()->route('');
             } else {
-            
+
             }
         } catch (\Exception $th) {
             return $this->exception($th);
