@@ -13,7 +13,7 @@ class ContactControllers extends Controller {
     public function index(Request $request) 
     {
         $keyword = $request->get('keyword');
-        $contacts = Contact::all();
+        $contacts = Contact::paginate(3);
 
         if($keyword){
          $contacts = Contact::where("name","LIKE","%$keyword%")->get();
