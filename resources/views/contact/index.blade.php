@@ -58,6 +58,9 @@
             </tbody>
         </table>
         {{ $contacts->links() }}
+        <div>
+            <p class="btn btn-warning mt-5">Logout</p>
+        </div>
     </div>
 </div>
 @endsection

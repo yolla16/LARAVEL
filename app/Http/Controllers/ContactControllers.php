@@ -10,13 +10,13 @@ class ContactControllers extends Controller {
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request) 
     {
         $keyword = $request->get('keyword');
         $contacts = Contact::paginate(3);
 
         if($keyword){
-         $contacts = Contact::where("name","LIKE","%$keyword%")->paginate(3);
+         $contacts = Contact::where("name","LIKE","%$keyword%")->get();
         }
 
         return view('contact.index',compact('contacts'));
@@ -37,7 +37,7 @@ class ContactControllers extends Controller {
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request) 
     {
         $request->validate([
             'full_name' => 'required|max:30',
@@ -53,6 +53,13 @@ class ContactControllers extends Controller {
         ]);
         $contact->save();
         return redirect('/')->with('success','Contact saved!');
+
+        try {
+            $this->tools->create($request->all());
+            return redirect()->route('tools.index')->with('status', 'Success created');
+        } catch (\Exception $contact) {
+            return $this->exception($contact);
+        }
     }
 
     /**
@@ -62,7 +69,8 @@ class ContactControllers extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function show($id) {
-        //
+        $contact = Contact::find($id);
+        return view('contact.show',compact('contact'));
     }
 
     /**
@@ -96,7 +104,14 @@ class ContactControllers extends Controller {
         $contact->phone = $request->input('phone');
         $contact->address = $request->input('address');
         $contact->save();
-        return redirect('/')->with('success','Contact update!');
+        return redirect('/')->with('success','Contact update!');  
+        
+        try {
+            $this->tools->where('id', $id)->update($request->except(['_token', '_method']));
+            return redirect()->route('tools.index')->with('status', 'Success Updated');
+        } catch (\Exception $contact) {
+            return $this->exception($contact);
+        }
     }
 
     /**
@@ -108,6 +123,34 @@ class ContactControllers extends Controller {
     public function destroy($id) {
         $contact  = Contact::find($id);
         $contact->delete();
-        return redirect('/')->with('success','Contact deleted!');
+        return redirect('/')->with('success','Contact deleted!');  
+
+        try {
+            $this->tools->destroy($id);
+            return redirect()->route('tools.index')->with('status', 'Deleted');
+        } catch (\Exception $contact) {
+            return $this->exception($contact);
+        }
+    }
+
+    private function exception(\Exception $contact) {
+        if($contact instanceof ClientException) {
+            $newException = json_decode($contact->getResponse()->getBody()->getContents(), true);
+            if($newException) {
+                $contact = new \Exception($newException['reason'], $newException['code']);
+            }
+        }
+        $arr = [
+            'error' => $contact->getMessage(),
+            'code' => $contact->getCode()
+        ];
+        return var_dump($arr);
+    }
+
+    public function logout()
+    {
+        $contact::logout();
+
+        return redirect()->route('login');
     }
 }
