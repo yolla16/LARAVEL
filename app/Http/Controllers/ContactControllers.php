@@ -2,6 +2,8 @@
 
 use Illuminate\Http\Request;
 use App\Contact;
+use GuzzleHttp\Exception\ClientException;
+use Illuminate\Support\Facades\Auth;
 
 class ContactControllers extends Controller {
 
@@ -150,7 +152,6 @@ class ContactControllers extends Controller {
     public function logout()
     {
         Auth::logout();
-
         return redirect()->route('login');
     }
 }

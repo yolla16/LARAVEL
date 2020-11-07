@@ -59,7 +59,7 @@
         </table>
         {{ $contacts->links() }}
         <div>
-            <p class="btn btn-warning mt-5">Logout</p>
+            <a href="{{ route('logout') }}" class="btn btn-warning mt-5">Logout</p>
         </div>
     </div>
 </div>
