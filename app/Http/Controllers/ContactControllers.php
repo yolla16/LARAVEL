@@ -149,7 +149,7 @@ class ContactControllers extends Controller {
 
     public function logout()
     {
-        $contact::logout();
+        Auth::logout();
 
         return redirect()->route('login');
     }
